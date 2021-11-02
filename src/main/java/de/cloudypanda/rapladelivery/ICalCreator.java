@@ -3,11 +3,13 @@ package de.cloudypanda.rapladelivery;
 import de.cloudypanda.rapladelivery.models.IcalEventProperties;
 import de.cloudypanda.rapladelivery.models.Lesson;
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.property.*;
 import net.fortuna.ical4j.util.RandomUidGenerator;
 import net.fortuna.ical4j.util.UidGenerator;
 
@@ -15,6 +17,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,11 +27,11 @@ import java.util.List;
 /**
  * Factory for methods used to generate ical-file
  */
-public class ICalFactory {
+public class ICalCreator {
 
     private final UidGenerator uidGenerator;
 
-    public ICalFactory() {
+    public ICalCreator() {
         uidGenerator = new RandomUidGenerator();
     }
 
@@ -39,7 +44,6 @@ public class ICalFactory {
         VEvent event = new VEvent(eventProperties.getStartTime(), eventProperties.getEndTime(), eventProperties.getName());
         event.add(uidGenerator.generateUid());
         event.add(new Description(eventProperties.getDescription()));
-        event.validate();
 
         return event;
     }
@@ -66,7 +70,7 @@ public class ICalFactory {
 
         events.forEach(calendar::add);
         RaplaDeliveryApplication.LOGGER.info("Adding events to calendar ...");
-        return  calendar;
+        return calendar;
     }
 
     public static Calendar UpdateCalendar() throws IOException {
@@ -76,7 +80,7 @@ public class ICalFactory {
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.setTime(new Date());
 
-        for (int i = 0; i <= 2; i++) {
+        for (int i = 0; i <= 6; i++) {
 
             int dayOfMonth = cal.get(java.util.Calendar.DAY_OF_MONTH);
             int month = cal.get(java.util.Calendar.MONTH) + 1;
@@ -92,7 +96,7 @@ public class ICalFactory {
             cal.add(java.util.Calendar.WEEK_OF_YEAR, 1);
         }
 
-        ICalFactory factory = new ICalFactory();
+        ICalCreator factory = new ICalCreator();
         List<VEvent> events = factory.convertLessonsToEvents(allLessons);
         RaplaDeliveryApplication.LOGGER.info("Creating Calendar ...");
         return factory.createCalendar(events);
