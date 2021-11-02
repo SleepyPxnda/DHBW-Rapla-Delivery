@@ -1,20 +1,27 @@
 package de.cloudypanda.rapladelivery;
 
+import de.cloudypanda.rapladelivery.models.Lesson;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class RaplaMapper {
 
-    public List<Lesson> GetClassesForKW(String raplaUrl, long kw) throws IOException {
+    private final List<String> WeekList = Arrays.asList("Mo", "Di", "Mi" , "Do" , "Fr" , "Sa" , "So");
+
+    public List<Lesson> GetClassesForKW(String raplaUrl, int kw) throws IOException {
         List<Lesson> classes = new ArrayList<>();
 
-        System.out.println("Request to " + raplaUrl);
+        //System.out.println("Request to " + raplaUrl);
         Document doc = Jsoup.connect(raplaUrl).get();
         Elements lessons = doc.select("td.week_block a span.tooltip");
 
@@ -53,7 +60,23 @@ public class RaplaMapper {
             }
 
             String day = date.split(" ")[0];
-            Lesson newClass = new Lesson(kw, day, lastChanged, beginn, end, name, prof, info, comment);
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.WEEK_OF_YEAR, kw);
+            cal.set(Calendar.DAY_OF_WEEK, WeekList.indexOf(day));
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.HOUR, Integer.parseInt(beginn.split(":")[0]));
+            cal.set(Calendar.MINUTE, Integer.parseInt(beginn.split(":")[1]));
+
+            long beginTime = cal.getTimeInMillis();
+
+            cal.set(Calendar.HOUR, Integer.parseInt(end.split(":")[0]));
+            cal.set(Calendar.MINUTE, Integer.parseInt(end.split(":")[1]));
+
+            long endTime = cal.getTimeInMillis();
+
+
+            Lesson newClass = new Lesson(beginTime, endTime, lastChanged, name, prof, info, comment);
             classes.add(newClass);
         });
 
