@@ -1,23 +1,19 @@
-package de.cloudypanda.rapladelivery;
+package de.cloudypanda.rapladelivery.models;
 
 public class Lesson {
 
-    long weekNumber;
-    String day;
+    long startTime;
+    long endTime;
     String lastChanged;
-    String beginn;
-    String end;
     String title;
     String professor;
     String info;
     String comment;
 
-    public Lesson(long weekNumber, String day, String lastChanged, String beginn, String end, String title, String professor, String info, String comment) {
-        this.weekNumber = weekNumber;
-        this.day = day;
+    public Lesson(long startTime, long endTime, String lastChanged, String title, String professor, String info, String comment) {
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.lastChanged = lastChanged;
-        this.beginn = beginn;
-        this.end = end;
         this.title = title;
         this.professor = professor;
         this.info = info;
@@ -26,12 +22,10 @@ public class Lesson {
 
     @Override
     public String toString() {
-        return "Class{" +
-                "weekNumber='" + weekNumber + '\'' +
-                ", day='" + day + '\'' +
+        return "Lesson{" +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
                 ", lastChanged='" + lastChanged + '\'' +
-                ", beginn='" + beginn + '\'' +
-                ", end='" + end + '\'' +
                 ", title='" + title + '\'' +
                 ", professor='" + professor + '\'' +
                 ", info='" + info + '\'' +
