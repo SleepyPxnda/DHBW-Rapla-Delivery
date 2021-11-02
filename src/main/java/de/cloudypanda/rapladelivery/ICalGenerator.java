@@ -1,17 +1,8 @@
-package de.cloudypanda.rapladelivery.controller;
+package de.cloudypanda.rapladelivery;
 
-import de.cloudypanda.rapladelivery.RaplaMapper;
-import de.cloudypanda.rapladelivery.models.ICalFactory;
 import de.cloudypanda.rapladelivery.models.Lesson;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.component.VEvent;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
@@ -21,13 +12,9 @@ import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-public class IcalController {
+public class ICalGenerator {
 
-
-    @GetMapping("rapla.ics")
-    public ResponseEntity GetLessonsToday() throws IOException {
-
+    public static Calendar UpdateCalendar() throws IOException {
         RaplaMapper mapper = new RaplaMapper();
         List<Lesson> allLessons = new ArrayList<>();
 
@@ -51,23 +38,7 @@ public class IcalController {
         ICalFactory factory = new ICalFactory();
         List<VEvent> events = factory.convertLessonsToEvents(allLessons);
 
-        Calendar cal = factory.createCalendar(events);
-
-
-
-        byte[] calendarByte = cal.toString().getBytes();
-        Resource resource = new ByteArrayResource(calendarByte);
-
-        HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=mycalendar.ics");
-        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        header.add("Pragma", "no-cache");
-        header.add("Expires", "0");
-
-        return ResponseEntity.ok().headers(header).contentType(MediaType.
-                        APPLICATION_OCTET_STREAM)
-                .body(resource);
+        return factory.createCalendar(events);
     }
+
 }
-
-

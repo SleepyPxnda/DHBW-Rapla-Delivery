@@ -32,4 +32,32 @@ public class Lesson {
                 ", comment='" + comment + '\'' +
                 '}';
     }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public String getLastChanged() {
+        return lastChanged;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getProfessor() {
+        return professor;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public String getComment() {
+        return comment;
+    }
 }

@@ -1,5 +1,7 @@
-package de.cloudypanda.rapladelivery.models;
+package de.cloudypanda.rapladelivery;
 
+import de.cloudypanda.rapladelivery.models.IcalEventProperties;
+import de.cloudypanda.rapladelivery.models.Lesson;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class ICalFactory {
 
-    private UidGenerator uidGenerator;
+    private final UidGenerator uidGenerator;
 
     public ICalFactory() {
         uidGenerator = new RandomUidGenerator();
@@ -48,9 +50,9 @@ public class ICalFactory {
         List<VEvent> events = new ArrayList<>();
 
         lessons.forEach(lesson -> {
-            LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.startTime), ZoneId.of("GMT+2"));
-            LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.endTime), ZoneId.of("GMT+2"));
-            IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.title, lesson.professor);
+            LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), ZoneId.of("GMT+2"));
+            LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), ZoneId.of("GMT+2"));
+            IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
             events.add(createEvent(props));
         });
@@ -66,20 +68,4 @@ public class ICalFactory {
         events.forEach(calendar::add);
         return  calendar;
     }
-
-    public void writeCalendar(List<VEvent> events) throws IOException {
-        Calendar calendar = new Calendar();
-
-        calendar.add(new ProdId("-//Ben Fortuna//iCal4j 1.0//EN"));
-        calendar.add(Version.VERSION_2_0);
-        calendar.add(CalScale.GREGORIAN);
-
-        events.forEach(calendar::add);
-
-        FileOutputStream fout = new FileOutputStream("mycalendar.ics");
-
-        CalendarOutputter outputter = new CalendarOutputter();
-        outputter.output(calendar, fout);
-    }
-
 }
