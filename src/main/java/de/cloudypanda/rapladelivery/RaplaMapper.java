@@ -5,17 +5,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.context.expression.CachedExpressionEvaluator;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class RaplaMapper {
 
     public List<Lesson> GetClassesForKW(String raplaUrl, int kw) throws IOException {
         List<Lesson> classes = new ArrayList<>();
+
+        RaplaDeliveryApplication.LOGGER.info("Retrieving RaplaCalendar for Week: " + kw);
 
         Document doc = Jsoup.connect(raplaUrl).get();
         Elements lessons = doc.select("td.week_block a span.tooltip");
