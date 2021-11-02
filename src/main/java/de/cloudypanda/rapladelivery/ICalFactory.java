@@ -39,7 +39,7 @@ public class ICalFactory {
      */
     public VEvent createEvent(IcalEventProperties eventProperties) {
         VEvent event = new VEvent(eventProperties.getStartTime(), eventProperties.getEndTime(), eventProperties.getName());
-        event.add(new Uid());
+        event.add(uidGenerator.generateUid());
         event.add(new Description(eventProperties.getDescription()));
         event.validate();
 
@@ -50,11 +50,15 @@ public class ICalFactory {
         List<VEvent> events = new ArrayList<>();
 
         lessons.forEach(lesson -> {
-            LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), ZoneId.of("GMT+2"));
-            LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), ZoneId.of("GMT+2"));
+            LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), ZoneId.systemDefault());
+            LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), ZoneId.systemDefault());
             IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
-            events.add(createEvent(props));
+
+            VEvent event = createEvent(props);
+            //System.out.println("Lesson:" + props.getName() + " Start:" + lesson.getStartTime() + " End:" + lesson.getEndTime() + "\n");
+            //System.out.println("Event:" + props.getName() + " Start:" + start + " End:" + end + "\n");
+            events.add(event);
         });
         return events;
     }

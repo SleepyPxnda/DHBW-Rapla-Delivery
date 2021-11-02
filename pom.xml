@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.cloudypanda</groupId>
     <artifactId>Rapla-Delivery</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>Rapla-Delivery</name>
     <description>Rapla-Delivery</description>
     <properties>
