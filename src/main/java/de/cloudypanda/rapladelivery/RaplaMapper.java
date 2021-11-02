@@ -5,23 +5,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.context.expression.CachedExpressionEvaluator;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 public class RaplaMapper {
-
-    private final List<String> WeekList = Arrays.asList("Mo", "Di", "Mi" , "Do" , "Fr" , "Sa" , "So");
 
     public List<Lesson> GetClassesForKW(String raplaUrl, int kw) throws IOException {
         List<Lesson> classes = new ArrayList<>();
 
-        //System.out.println("Request to " + raplaUrl);
         Document doc = Jsoup.connect(raplaUrl).get();
         Elements lessons = doc.select("td.week_block a span.tooltip");
 
@@ -62,19 +57,19 @@ public class RaplaMapper {
             String day = date.split(" ")[0];
 
             Calendar cal = Calendar.getInstance();
+            cal.setFirstDayOfWeek(Calendar.MONDAY);
             cal.set(Calendar.WEEK_OF_YEAR, kw);
-            cal.set(Calendar.DAY_OF_WEEK, WeekList.indexOf(day));
+            cal.set(Calendar.DAY_OF_WEEK, ConvertDayStringToInt(day));
             cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.HOUR, Integer.parseInt(beginn.split(":")[0]));
+            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(beginn.split(":")[0]));
             cal.set(Calendar.MINUTE, Integer.parseInt(beginn.split(":")[1]));
 
             long beginTime = cal.getTimeInMillis();
 
-            cal.set(Calendar.HOUR, Integer.parseInt(end.split(":")[0]));
+            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(end.split(":")[0]));
             cal.set(Calendar.MINUTE, Integer.parseInt(end.split(":")[1]));
 
             long endTime = cal.getTimeInMillis();
-
 
             Lesson newClass = new Lesson(beginTime, endTime, lastChanged, name, prof, info, comment);
             classes.add(newClass);
@@ -82,5 +77,26 @@ public class RaplaMapper {
 
 
         return classes;
+    }
+
+    private int ConvertDayStringToInt(String name){
+        switch(name){
+            case "Mo":
+                return Calendar.MONDAY;
+            case "Di":
+                return Calendar.TUESDAY;
+            case "Mi":
+                return Calendar.WEDNESDAY;
+            case "Do":
+                return Calendar.THURSDAY;
+            case "Fr":
+                return Calendar.FRIDAY;
+            case "Sa":
+                return Calendar.SATURDAY;
+            case "So":
+                return  Calendar.SUNDAY;
+        }
+
+        return 0;
     }
 }
