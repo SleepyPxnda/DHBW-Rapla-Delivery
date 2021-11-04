@@ -5,25 +5,26 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.context.expression.CachedExpressionEvaluator;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 public class RaplaMapper {
 
     public List<Lesson> GetClassesForKW(String raplaUrl, int kw) throws IOException {
         List<Lesson> classes = new ArrayList<>();
 
+        RaplaDeliveryApplication.LOGGER.info("Retrieving RaplaCalendar for Week: " + kw);
+
         Document doc = Jsoup.connect(raplaUrl).get();
         Elements lessons = doc.select("td.week_block a span.tooltip");
 
         lessons.forEach((lesson) -> {
 
-            //First Div
-            String lastChanged = lesson.select("div:first-of-type").text();
+            String place = lesson.select("strong:first-of-type").text();
 
             //Always the Second Div
             String date = lesson.select("div:nth-of-type(2)").text();
@@ -32,12 +33,6 @@ public class RaplaMapper {
 
             //2. td in 1. tr in tbody in table
             String name = additionalInfos.select("tr:nth-of-type(1) td:nth-of-type(2)").text();
-
-            //2. td in 3. tr in tbody in table
-            String comment = additionalInfos.select("tr:nth-of-type(3) td:nth-of-type(2)").text();
-
-            //2. td in 4. tr in tbody in table
-            String info = additionalInfos.select("tr:nth-of-type(4) td:nth-of-type(2)").text();
 
             String prof = "";
             if(additionalInfos.childrenSize() != 6){
@@ -71,7 +66,9 @@ public class RaplaMapper {
 
             long endTime = cal.getTimeInMillis();
 
-            Lesson newClass = new Lesson(beginTime, endTime, lastChanged, name, prof, info, comment);
+            String onlineText = place.toLowerCase(Locale.ROOT).contains("online") ? "[Online] " : "";
+
+            Lesson newClass = new Lesson(beginTime, endTime, onlineText + name, prof);
             classes.add(newClass);
         });
 
