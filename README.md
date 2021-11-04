@@ -1,3 +1,4 @@
 # DHBW-Rapla-Delivery
 
-Java Spring Backend to parse the rapla-html delivered by the DHBW Stuttgart and present it via an endpoint to subscribe it with Ical-compatible clients.
+Java Spring application to convert the rapla calendar of the DHBW into an usable .ics file.
+This code only works for one specific course "TINF19D".
