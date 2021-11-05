@@ -11,4 +11,6 @@ ICal4J - Used to generate the .ics file
 Java Spring - To provide the .ics file on an endpoint
 Jsoup - To retrieve and parse the html File
 
+## License
+MIT License
 
