@@ -2,10 +2,7 @@ package de.cloudypanda.rapladelivery;
 
 import de.cloudypanda.rapladelivery.models.IcalEventProperties;
 import de.cloudypanda.rapladelivery.models.Lesson;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.TimeZone;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -68,17 +65,21 @@ public class ICalCreator {
         calendar.add(Version.VERSION_2_0);
         calendar.add(CalScale.GREGORIAN);
 
-        events.forEach(calendar::add);
         RaplaDeliveryApplication.LOGGER.info("Adding events to calendar ...");
+        events.forEach(calendar::add);
+        RaplaDeliveryApplication.LOGGER.info("Events added: ");
+        events.forEach(event -> {
+            PropertyList properties = event.getProperties();
+            RaplaDeliveryApplication.LOGGER.info(properties.getFirst("SUMMARY").get()
+                    + " " + properties.getFirst("DTSTART").get()
+                    + " " + properties.getFirst("DTEND").get());
+        });
         return calendar;
     }
 
-    public static Calendar UpdateCalendar() throws IOException {
+    public static Calendar UpdateCalendar(java.util.Calendar cal) {
         RaplaMapper mapper = new RaplaMapper();
         List<Lesson> allLessons = new ArrayList<>();
-
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(new Date());
 
         for (int i = 0; i <= 6; i++) {
 
@@ -89,15 +90,22 @@ public class ICalCreator {
             String raplaUrl = String.format("https://rapla.dhbw-stuttgart.de/rapla?key=txB1FOi5xd1wUJBWuX8lJhGDUgtMSFmnKLgAG_NVMhBcTT6puuu_njyaHFsjO78f&day=%s&month=%s&year=%s",
                     dayOfMonth, month, year);
 
+            RaplaDeliveryApplication.LOGGER.info("Mapping Events for Week: " + cal.get(java.util.Calendar.WEEK_OF_YEAR));
+            List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR), cal);
 
-            List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR));
+            if(lessons == null){
+                RaplaDeliveryApplication.LOGGER.error("Cannot update Calendar - Retrying next cycle");
+                return null;
+            }
+
+
             allLessons.addAll(lessons);
-
             cal.add(java.util.Calendar.WEEK_OF_YEAR, 1);
         }
 
         ICalCreator factory = new ICalCreator();
         List<VEvent> events = factory.convertLessonsToEvents(allLessons);
+
         RaplaDeliveryApplication.LOGGER.info("Creating Calendar ...");
         return factory.createCalendar(events);
     }

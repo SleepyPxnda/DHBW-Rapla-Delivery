@@ -14,12 +14,19 @@ import java.util.Locale;
 
 public class RaplaMapper {
 
-    public List<Lesson> GetClassesForKW(String raplaUrl, int kw) throws IOException {
+    public List<Lesson> GetClassesForKW(String raplaUrl, int kw, Calendar cal) {
         List<Lesson> classes = new ArrayList<>();
 
-        RaplaDeliveryApplication.LOGGER.info("Retrieving RaplaCalendar for Week: " + kw);
+        RaplaDeliveryApplication.LOGGER.info("Requesting Week " + kw + " from Rapla");
+        Document doc;
 
-        Document doc = Jsoup.connect(raplaUrl).get();
+        try {
+            doc = Jsoup.connect(raplaUrl).get();
+        }catch(IOException exc){
+            RaplaDeliveryApplication.LOGGER.error("Cannot retrieve Rapla HTML");
+            return null;
+        }
+
         Elements lessons = doc.select("td.week_block a span.tooltip");
 
         lessons.forEach((lesson) -> {
@@ -39,7 +46,7 @@ public class RaplaMapper {
                 prof = additionalInfos.select("tr:nth-of-type("+ additionalInfos.childrenSize() +") td:nth-of-type(2)").text();
             }
 
-            String beginn = "";
+            String beginn;
             String end = date.split("-")[1];
             if(date.split(" ")[2].equalsIgnoreCase("wöchentlich")){
                 beginn = date.split(" ")[1].split("-")[0];
@@ -51,8 +58,7 @@ public class RaplaMapper {
 
             String day = date.split(" ")[0];
 
-            Calendar cal = Calendar.getInstance();
-            cal.setFirstDayOfWeek(Calendar.MONDAY);
+
             cal.set(Calendar.WEEK_OF_YEAR, kw);
             cal.set(Calendar.DAY_OF_WEEK, ConvertDayStringToInt(day));
             cal.set(Calendar.SECOND, 0);
