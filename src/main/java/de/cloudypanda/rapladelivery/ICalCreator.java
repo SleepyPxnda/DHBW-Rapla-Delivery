@@ -2,10 +2,7 @@ package de.cloudypanda.rapladelivery;
 
 import de.cloudypanda.rapladelivery.models.IcalEventProperties;
 import de.cloudypanda.rapladelivery.models.Lesson;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.TimeZone;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -52,12 +49,7 @@ public class ICalCreator {
         List<VEvent> events = new ArrayList<>();
 
         lessons.forEach(lesson -> {
-            if(lesson.getStartTime() < System.currentTimeMillis()){
-                return;
-            }
-
             LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), ZoneId.systemDefault());
-
             LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), ZoneId.systemDefault());
             IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
@@ -73,8 +65,15 @@ public class ICalCreator {
         calendar.add(Version.VERSION_2_0);
         calendar.add(CalScale.GREGORIAN);
 
-        events.forEach(calendar::add);
         RaplaDeliveryApplication.LOGGER.info("Adding events to calendar ...");
+        events.forEach(calendar::add);
+        RaplaDeliveryApplication.LOGGER.info("Events added: ");
+        events.forEach(event -> {
+            PropertyList properties = event.getProperties();
+            RaplaDeliveryApplication.LOGGER.info(properties.getFirst("SUMMARY").get()
+                    + " " + properties.getFirst("DTSTART").get()
+                    + " " + properties.getFirst("DTEND").get());
+        });
         return calendar;
     }
 
@@ -92,7 +91,7 @@ public class ICalCreator {
                     dayOfMonth, month, year);
 
             RaplaDeliveryApplication.LOGGER.info("Mapping Events for Week: " + cal.get(java.util.Calendar.WEEK_OF_YEAR));
-            List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR));
+            List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR), cal);
 
             if(lessons == null){
                 RaplaDeliveryApplication.LOGGER.error("Cannot update Calendar - Retrying next cycle");

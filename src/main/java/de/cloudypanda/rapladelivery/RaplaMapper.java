@@ -14,7 +14,7 @@ import java.util.Locale;
 
 public class RaplaMapper {
 
-    public List<Lesson> GetClassesForKW(String raplaUrl, int kw) {
+    public List<Lesson> GetClassesForKW(String raplaUrl, int kw, Calendar cal) {
         List<Lesson> classes = new ArrayList<>();
 
         RaplaDeliveryApplication.LOGGER.info("Requesting Week " + kw + " from Rapla");
@@ -58,8 +58,7 @@ public class RaplaMapper {
 
             String day = date.split(" ")[0];
 
-            Calendar cal = Calendar.getInstance();
-            cal.setFirstDayOfWeek(Calendar.MONDAY);
+
             cal.set(Calendar.WEEK_OF_YEAR, kw);
             cal.set(Calendar.DAY_OF_WEEK, ConvertDayStringToInt(day));
             cal.set(Calendar.SECOND, 0);
