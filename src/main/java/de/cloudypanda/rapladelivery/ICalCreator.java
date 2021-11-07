@@ -52,7 +52,12 @@ public class ICalCreator {
         List<VEvent> events = new ArrayList<>();
 
         lessons.forEach(lesson -> {
+            if(lesson.getStartTime() < System.currentTimeMillis()){
+                return;
+            }
+
             LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), ZoneId.systemDefault());
+
             LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), ZoneId.systemDefault());
             IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
@@ -73,7 +78,7 @@ public class ICalCreator {
         return calendar;
     }
 
-    public static Calendar UpdateCalendar() throws IOException {
+    public static Calendar UpdateCalendar() {
         RaplaMapper mapper = new RaplaMapper();
         List<Lesson> allLessons = new ArrayList<>();
 
@@ -91,14 +96,41 @@ public class ICalCreator {
 
 
             List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR));
-            allLessons.addAll(lessons);
 
+            if(lessons == null){
+                RaplaDeliveryApplication.LOGGER.error("Cannot update Calendar - Retrying next cycle");
+                return null;
+            }
+
+
+            allLessons.addAll(lessons);
             cal.add(java.util.Calendar.WEEK_OF_YEAR, 1);
         }
 
         ICalCreator factory = new ICalCreator();
         List<VEvent> events = factory.convertLessonsToEvents(allLessons);
+
+        printEventAsTable(events);
+
         RaplaDeliveryApplication.LOGGER.info("Creating Calendar ...");
         return factory.createCalendar(events);
+    }
+
+    private static void printEventAsTable(List<VEvent> events){
+        StringBuilder sb = new StringBuilder();
+        sb.append("---------------------------------\n");
+
+
+        events.forEach(event -> {
+            sb.append("Found Event: ")
+                    .append(event.getProperties().getFirst("SUMMARY").get())
+                    .append(" ")
+                    .append(event.getProperties().getFirst("DTSTART").get())
+                    .append(event.getProperties().getFirst("DTEND").get());
+            sb.append("\n");
+        });
+
+        sb.append("---------------------------------\n");
+        RaplaDeliveryApplication.LOGGER.info(sb.toString());
     }
 }

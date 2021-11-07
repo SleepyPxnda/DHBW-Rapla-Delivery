@@ -11,8 +11,8 @@ import java.io.IOException;
 @Component
 public class RaplaUpdater {
 
-    @Scheduled(fixedRate = 1000 * 60 * 30)
-    public void UpdateRapla() throws IOException {
+    @Scheduled(fixedRate = 1000 * 60 * 60)
+    public void UpdateRapla() {
 
         Calendar cal = ICalCreator.UpdateCalendar();
         RaplaDeliveryApplication.LOGGER.info("Updated Calendar - Found " + cal.getComponents().getAll().size() + " Entries");
