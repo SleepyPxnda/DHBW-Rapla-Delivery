@@ -17,7 +17,7 @@ public class RaplaMapper {
     public List<Lesson> GetClassesForKW(String raplaUrl, int kw) {
         List<Lesson> classes = new ArrayList<>();
 
-        RaplaDeliveryApplication.LOGGER.info("Retrieving Week: " + kw);
+        RaplaDeliveryApplication.LOGGER.info("Requesting Week " + kw + " from Rapla");
         Document doc;
 
         try {

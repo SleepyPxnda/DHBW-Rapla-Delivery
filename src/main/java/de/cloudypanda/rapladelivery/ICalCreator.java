@@ -78,12 +78,9 @@ public class ICalCreator {
         return calendar;
     }
 
-    public static Calendar UpdateCalendar() {
+    public static Calendar UpdateCalendar(java.util.Calendar cal) {
         RaplaMapper mapper = new RaplaMapper();
         List<Lesson> allLessons = new ArrayList<>();
-
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(new Date());
 
         for (int i = 0; i <= 6; i++) {
 
@@ -94,7 +91,7 @@ public class ICalCreator {
             String raplaUrl = String.format("https://rapla.dhbw-stuttgart.de/rapla?key=txB1FOi5xd1wUJBWuX8lJhGDUgtMSFmnKLgAG_NVMhBcTT6puuu_njyaHFsjO78f&day=%s&month=%s&year=%s",
                     dayOfMonth, month, year);
 
-
+            RaplaDeliveryApplication.LOGGER.info("Mapping Events for Week: " + cal.get(java.util.Calendar.WEEK_OF_YEAR));
             List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR));
 
             if(lessons == null){
@@ -110,27 +107,7 @@ public class ICalCreator {
         ICalCreator factory = new ICalCreator();
         List<VEvent> events = factory.convertLessonsToEvents(allLessons);
 
-        printEventAsTable(events);
-
         RaplaDeliveryApplication.LOGGER.info("Creating Calendar ...");
         return factory.createCalendar(events);
-    }
-
-    private static void printEventAsTable(List<VEvent> events){
-        StringBuilder sb = new StringBuilder();
-        sb.append("---------------------------------\n");
-
-
-        events.forEach(event -> {
-            sb.append("Found Event: ")
-                    .append(event.getProperties().getFirst("SUMMARY").get())
-                    .append(" ")
-                    .append(event.getProperties().getFirst("DTSTART").get())
-                    .append(event.getProperties().getFirst("DTEND").get());
-            sb.append("\n");
-        });
-
-        sb.append("---------------------------------\n");
-        RaplaDeliveryApplication.LOGGER.info(sb.toString());
     }
 }
