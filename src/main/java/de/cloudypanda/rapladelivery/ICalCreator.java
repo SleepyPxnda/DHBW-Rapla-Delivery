@@ -47,10 +47,11 @@ public class ICalCreator {
 
     public List<VEvent> convertLessonsToEvents(List<Lesson> lessons){
         List<VEvent> events = new ArrayList<>();
+        ZoneId zoneId = TimeZone.getTimeZone("Europe/Berlin").toZoneId();
 
         lessons.forEach(lesson -> {
-            LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), ZoneId.systemDefault());
-            LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), ZoneId.systemDefault());
+            LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), zoneId);
+            LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), zoneId);
             IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
             VEvent event = createEvent(props);
