@@ -57,6 +57,8 @@ public class RaplaMapper {
             String day = date.split(" ")[0];
 
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/London"));
+            cal.setFirstDayOfWeek(java.util.Calendar.MONDAY);
+            cal.setMinimalDaysInFirstWeek(4);
             cal.set(Calendar.WEEK_OF_YEAR, kw);
             cal.set(Calendar.DAY_OF_WEEK, ConvertDayStringToInt(day));
             cal.set(Calendar.SECOND, 0);
