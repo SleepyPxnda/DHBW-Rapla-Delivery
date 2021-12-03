@@ -43,11 +43,18 @@ public class ICalCreator {
         List<VEvent> events = new ArrayList<>();
 
         lessons.forEach(lesson -> {
+            System.out.println("Start");
+            System.out.println(Instant.ofEpochMilli(lesson.getStartTime()));
+            System.out.println(LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), zoneId));
+
+
             LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), zoneId);
             LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), zoneId);
             IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
+
             VEvent event = createEvent(props);
+            System.out.println("Event:" + event);
             events.add(event);
         });
         return events;
@@ -61,6 +68,7 @@ public class ICalCreator {
 
         RaplaDeliveryApplication.LOGGER.info("Adding events to calendar ...");
         events.forEach(calendar::add);
+        /*
         RaplaDeliveryApplication.LOGGER.info("Events added: ");
         events.forEach(event -> {
             PropertyList properties = event.getProperties();
@@ -68,6 +76,7 @@ public class ICalCreator {
                     + " " + properties.getFirst("DTSTART").get()
                     + " " + properties.getFirst("DTEND").get());
         });
+         */
         return calendar;
     }
 
@@ -85,7 +94,7 @@ public class ICalCreator {
                     dayOfMonth, month, year);
 
             RaplaDeliveryApplication.LOGGER.info("Mapping Events for Week: " + cal.get(java.util.Calendar.WEEK_OF_YEAR));
-            List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR), cal);
+            List<Lesson> lessons = mapper.GetClassesForKW(raplaUrl, cal.get(java.util.Calendar.WEEK_OF_YEAR));
 
             if(lessons == null){
                 RaplaDeliveryApplication.LOGGER.error("Cannot update Calendar - Retrying next cycle");
@@ -98,6 +107,8 @@ public class ICalCreator {
         }
 
         ICalCreator factory = new ICalCreator();
+
+        System.out.println("Timezone:" + cal.getTimeZone().toZoneId());
         List<VEvent> events = factory.convertLessonsToEvents(allLessons, cal.getTimeZone().toZoneId());
 
         RaplaDeliveryApplication.LOGGER.info("Creating Calendar ...");

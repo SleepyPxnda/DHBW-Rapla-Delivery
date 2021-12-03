@@ -8,14 +8,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class RaplaMapper {
 
-    public List<Lesson> GetClassesForKW(String raplaUrl, int kw, Calendar cal) {
+    public List<Lesson> GetClassesForKW(String raplaUrl, int kw) {
         List<Lesson> classes = new ArrayList<>();
 
         RaplaDeliveryApplication.LOGGER.info("Requesting Week " + kw + " from Rapla");
@@ -59,16 +56,16 @@ public class RaplaMapper {
 
             String day = date.split(" ")[0];
 
-
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/London"));
             cal.set(Calendar.WEEK_OF_YEAR, kw);
             cal.set(Calendar.DAY_OF_WEEK, ConvertDayStringToInt(day));
             cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(beginn.split(":")[0]));
+            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(beginn.split(":")[0]) - 1);
             cal.set(Calendar.MINUTE, Integer.parseInt(beginn.split(":")[1]));
 
             long beginTime = cal.getTimeInMillis();
 
-            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(end.split(":")[0]));
+            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(end.split(":")[0]) - 1);
             cal.set(Calendar.MINUTE, Integer.parseInt(end.split(":")[1]));
 
             long endTime = cal.getTimeInMillis();

@@ -1,5 +1,6 @@
 package de.cloudypanda.rapladelivery;
 
+import de.cloudypanda.rapladelivery.tasks.RaplaUpdater;
 import net.fortuna.ical4j.model.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +13,10 @@ import java.util.Date;
 @SpringBootApplication
 @EnableScheduling
 public class RaplaDeliveryApplication {
-    
+
     public static final Logger LOGGER = LoggerFactory.getLogger(RaplaDeliveryApplication.class);
 
     public static void main(String[] args) {
-
         SpringApplication.run(RaplaDeliveryApplication.class, args);
     }
 }
