@@ -1,35 +1,45 @@
 package de.cloudypanda.rapladelivery.tasks;
 
-import de.cloudypanda.rapladelivery.ICalCreator;
+import de.cloudypanda.rapladelivery.Ical.CalendarStorage;
+import de.cloudypanda.rapladelivery.Ical.ICalCreator;
 import de.cloudypanda.rapladelivery.RaplaDeliveryApplication;
-import de.cloudypanda.rapladelivery.RaplaMapper;
 import net.fortuna.ical4j.model.Calendar;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
 @Component
 public class RaplaUpdater {
 
-    @Scheduled(fixedRate = 1000 * 60 * 60)
+    //Scheduled at every 3 Hours
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 3)
     public void UpdateRapla() {
 
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.setFirstDayOfWeek(java.util.Calendar.MONDAY);
-        calendar.setMinimalDaysInFirstWeek(4);
-        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
+        java.util.Calendar IOSCalendar = java.util.Calendar.getInstance();
+        IOSCalendar.setTime(new Date());
+        IOSCalendar.setFirstDayOfWeek(java.util.Calendar.MONDAY);
+        IOSCalendar.setMinimalDaysInFirstWeek(4);
+        IOSCalendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
 
-        //System.out.println(calendar);
+        RaplaDeliveryApplication.LOGGER.info("Updating Google Calendar - " + new Date() + "-  Starting Week: " + IOSCalendar.get(java.util.Calendar.WEEK_OF_YEAR));
+        Calendar IOSCalCalendar = ICalCreator.UpdateCalendar(IOSCalendar);
+        CalendarStorage.setIOSCalendar(IOSCalCalendar);
+        RaplaDeliveryApplication.LOGGER.info("Updated Google Calendar - Found " + IOSCalCalendar.getComponents().getAll().size() + " Entries");
 
-        RaplaDeliveryApplication.LOGGER.info("Updating Calendar - " + new Date() + "-  Starting Week: " + calendar.get(java.util.Calendar.WEEK_OF_YEAR));
 
-        Calendar cal = ICalCreator.UpdateCalendar(calendar);
-        RaplaDeliveryApplication.LOGGER.info("Updated Calendar - Found " + cal.getComponents().getAll().size() + " Entries");
-        RaplaDeliveryApplication.setCalendar(cal);
+        java.util.Calendar googleCalendar = java.util.Calendar.getInstance();
+        googleCalendar.setTime(new Date());
+        googleCalendar.setFirstDayOfWeek(java.util.Calendar.MONDAY);
+        googleCalendar.setMinimalDaysInFirstWeek(4);
+        googleCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        RaplaDeliveryApplication.LOGGER.info("Updating Google Calendar - " + new Date() + "-  Starting Week: " + googleCalendar.get(java.util.Calendar.WEEK_OF_YEAR));
+        Calendar googleCalCalendar = ICalCreator.UpdateCalendar(googleCalendar);
+        CalendarStorage.setGoogleCalendar(googleCalCalendar);
+        RaplaDeliveryApplication.LOGGER.info("Updated Google Calendar - Found " + googleCalCalendar.getComponents().getAll().size() + " Entries");
+
     }
 
 }

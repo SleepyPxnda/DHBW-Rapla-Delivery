@@ -1,5 +1,6 @@
-package de.cloudypanda.rapladelivery;
+package de.cloudypanda.rapladelivery.Ical;
 
+import de.cloudypanda.rapladelivery.RaplaDeliveryApplication;
 import de.cloudypanda.rapladelivery.models.Lesson;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
