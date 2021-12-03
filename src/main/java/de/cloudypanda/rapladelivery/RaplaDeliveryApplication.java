@@ -12,20 +12,11 @@ import java.util.Date;
 @SpringBootApplication
 @EnableScheduling
 public class RaplaDeliveryApplication {
-
-    private static Calendar calendar;
+    
     public static final Logger LOGGER = LoggerFactory.getLogger(RaplaDeliveryApplication.class);
 
     public static void main(String[] args) {
 
         SpringApplication.run(RaplaDeliveryApplication.class, args);
-    }
-
-    public static Calendar getCalendar() {
-        return calendar;
-    }
-
-    public static void setCalendar(Calendar calendar) {
-        RaplaDeliveryApplication.calendar = calendar;
     }
 }
