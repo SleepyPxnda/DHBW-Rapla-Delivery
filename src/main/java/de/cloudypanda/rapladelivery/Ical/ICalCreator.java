@@ -43,18 +43,11 @@ public class ICalCreator {
         List<VEvent> events = new ArrayList<>();
 
         lessons.forEach(lesson -> {
-            System.out.println("Start");
-            System.out.println(Instant.ofEpochMilli(lesson.getStartTime()));
-            System.out.println(LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), zoneId));
-
-
             LocalDateTime start = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getStartTime()), zoneId);
             LocalDateTime end = LocalDateTime.ofInstant(Instant.ofEpochMilli(lesson.getEndTime()), zoneId);
             IcalEventProperties props = new IcalEventProperties(uidGenerator.generateUid(), start, end, lesson.getTitle(), lesson.getProfessor());
 
-
             VEvent event = createEvent(props);
-            System.out.println("Event:" + event);
             events.add(event);
         });
         return events;
@@ -108,7 +101,6 @@ public class ICalCreator {
 
         ICalCreator factory = new ICalCreator();
 
-        System.out.println("Timezone:" + cal.getTimeZone().toZoneId());
         List<VEvent> events = factory.convertLessonsToEvents(allLessons, cal.getTimeZone().toZoneId());
 
         RaplaDeliveryApplication.LOGGER.info("Creating Calendar ...");
