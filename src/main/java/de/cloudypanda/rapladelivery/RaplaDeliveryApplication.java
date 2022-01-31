@@ -1,5 +1,6 @@
 package de.cloudypanda.rapladelivery;
 
+import de.cloudypanda.rapladelivery.tasks.RaplaUpdater;
 import net.fortuna.ical4j.model.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,5 @@ public class RaplaDeliveryApplication {
 
         LOGGER.info("Started Delivery with URL: '" + Rapla_URL + "'");
         SpringApplication.run(RaplaDeliveryApplication.class, args);
-    }
-
-    public static Calendar getCalendar() {
-        return calendar;
-    }
-
-    public static void setCalendar(Calendar calendar) {
-        RaplaDeliveryApplication.calendar = calendar;
     }
 }
