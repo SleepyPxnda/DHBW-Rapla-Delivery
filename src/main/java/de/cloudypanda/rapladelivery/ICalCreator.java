@@ -88,7 +88,7 @@ public class ICalCreator {
             int month = cal.get(java.util.Calendar.MONTH) + 1;
             int year = cal.get(java.util.Calendar.YEAR);
 
-            String raplaUrl = String.format("https://rapla.dhbw-stuttgart.de/rapla?key=txB1FOi5xd1wUJBWuX8lJhGDUgtMSFmnKLgAG_NVMhBcTT6puuu_njyaHFsjO78f&day=%s&month=%s&year=%s",
+            String raplaUrl = String.format(RaplaDeliveryApplication.Rapla_URL + "&day=%s&month=%s&year=%s",
                     dayOfMonth, month, year);
 
             RaplaDeliveryApplication.LOGGER.info("Mapping Events for Week: " + cal.get(java.util.Calendar.WEEK_OF_YEAR));

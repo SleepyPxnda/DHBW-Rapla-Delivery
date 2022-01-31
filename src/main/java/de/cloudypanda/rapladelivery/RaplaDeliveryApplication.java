@@ -14,10 +14,13 @@ import java.util.Date;
 public class RaplaDeliveryApplication {
 
     private static Calendar calendar;
+    public static String Rapla_URL;
     public static final Logger LOGGER = LoggerFactory.getLogger(RaplaDeliveryApplication.class);
 
     public static void main(String[] args) {
+        Rapla_URL = System.getenv("RAPLA_URL");
 
+        LOGGER.info("Started Delivery with URL: '" + Rapla_URL + "'");
         SpringApplication.run(RaplaDeliveryApplication.class, args);
     }
 
