@@ -21,5 +21,5 @@ MIT License
 ## Endpoints
 The spring backend provides 2 endpoints to subscribe:
 
-Endpoint Google: https://rapla.cloudypanda.de/calendars/google/TINF19DRapla.ics (UTC) 
-Endpoint IOS: https://rapla.cloudypanda.de/calendars/ios/TINF19DRapla.ics (GMT)
+* Endpoint Google: https://rapla.cloudypanda.de/calendars/google/TINF19DRapla.ics (UTC) 
+* Endpoint IOS: https://rapla.cloudypanda.de/calendars/ios/TINF19DRapla.ics (GMT)
